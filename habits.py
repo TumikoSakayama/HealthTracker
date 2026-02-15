@@ -26,7 +26,3 @@ class Habit:
             data['created_at'],
             data['completion_date']
         )
-
-    
-
-        
