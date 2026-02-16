@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
 class HabitForm():
-  def __init__(self, add_callback):
+  def __init__(self, master, add_callback):
     super().__init__(master)
     self.add_callback = add_callback
 
@@ -55,3 +55,4 @@ class HabitForm():
         state = "normal" if enabled else "disabled"
         self.add_btn.configure(state=state)
     
+
