@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 from logichandler import HabitHandler
-from habits_form import HabitForm
+from habits_form import HabitForm, HabitDisplay
 
 class FitnessTrackerApp(ctk.CTk):
     def __init__(self):
@@ -31,6 +31,9 @@ class FitnessTrackerApp(ctk.CTk):
 
         self.form = HabitForm(self.main_frame, self.add_habit)
         self.form.grid(row=0, column=0, sticky="ew", padx=20, pady=10)
+
+        self.display = HabitDisplay(self.main_frame, self.toggle_completion)
+        self.display.grid(row=1, column=0, sticky="nsew", padx=20, pady=10)
 
         self.main_frame = ctk.CTkFrame(self, corner_radius=0)
         self.main_frame.grid(row=0, column=1, sticky='nsew', padx=10, pady=10)
