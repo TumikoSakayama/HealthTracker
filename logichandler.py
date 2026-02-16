@@ -10,8 +10,13 @@ class HabitHandler:
 
     def new_collection(self, file_path):
         try:
+            directory = os.path.dirname(file_path)
+            if directory and not os.path.exists(directory):
+                os.makedirs(directory)
+
             with open(file_path, 'w') as f:
                 json.dump([], f)
+
             self.current_file = file_path
             self.habits = []
             return True, "New collection created!"
@@ -20,20 +25,14 @@ class HabitHandler:
 
     def load_habits(self, file_path):
         try:
-            if not os.path.exists(file_path):
-                return False, "File does not exist"
-
             with open(file_path, 'r') as f:
                 data = json.load(f)
-                if not isinstance(data, list):
-                    return False, "Corrupted file format."
                 self.habits = [Habit.from_dict(item) for item in data]
+            
             self.current_file = file_path
-            return True, f"Loaded: {len(self.habits)} habits"
-        except json.JSONDecodeError:
-            return False, "File is not a valid JSON."
+            return True, len(self.habits), self.get_file_name()
         except Exception as e:
-            return False, str(e)
+            return False, str(e), None
 
     def add_habit(self, name, category, goal):
         if not name or category:
