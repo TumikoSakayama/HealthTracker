@@ -14,14 +14,19 @@ class HabitHandler:
             if directory and not os.path.exists(directory):
                 os.makedirs(directory)
 
+            if directory and not os.access(directory, os.W_OK):
+                return False, "Permission Denied: Cannot write to this folder."
+
             with open(file_path, 'w') as f:
                 json.dump([], f)
 
             self.current_file = file_path
             self.habits = []
-            return True, "New collection created!"
+            return True, os.path.basename(file_path)
+        except PermissionError:
+            return False, "Permission Denied: You don't have rights to save here."
         except Exception as e:
-            return False, f"Failed to create file: {str(e)}"
+            return False, f"Location Error: {str(e)}"
 
     def load_habits(self, file_path):
         try:
@@ -71,11 +76,19 @@ class HabitHandler:
     def save_to_file(self, success_msg="Changes saved!"):
         if not self.current_file:
             return False, "No file loaded, please load a file."
+        
+        if not os.path.exists(os.path.dirname(self.current_file)):
+            return False, "Error: The folder containing your file has been moved or deleted"
 
         try:
+            if not os.path.exists(self.current_file) and not os.access(self.current_file, os.W_OK):
+                return False, "Error: The file is now read-only. Please check file permissions."
+            
             data_to_save = [h.to_dict() for h in self.habits]
             with open(self.current_file, 'w') as f:
                 json.dump(data_to_save, f, indent=4)
             return True, success_msg
+        except PermissionError:
+            return False, "Permission Denied: Cannot overwrite the file."
         except Exception as e:
             return False, f"Disk Error: {str(e)}"
