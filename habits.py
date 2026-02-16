@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Habit:
     def __init__(self, name, category, weekly_goal=7, created_at=None, completion_date=None):
@@ -6,7 +6,7 @@ class Habit:
         self.category = category.strip()
         self.weekly_goal = int(weekly_goal)
         self.created_at = created_at if created_at else datetime.now().strftime("%Y-%m-%d")
-        self.completion_date = completion_date if completion_date else []
+        self.completion_date = list(set(completion_date)) if completion_date else []
 
     def to_dict(self):
         return{
