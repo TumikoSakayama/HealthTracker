@@ -164,6 +164,7 @@ class HabitStats(ctk.CTkFrame):
                 
             self.ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
             self.ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))
+            self.fig.autofmt_xdate()
             
         self.canvas.draw()
             
