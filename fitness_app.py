@@ -116,7 +116,7 @@ class FitnessTrackerApp(ctk.CTk):
         toast.overrideredirect(True)
 
         x = self.winfo_x() + (self.winfo_width() // 2) - 150
-        y = self.winfo_y() + (self.winfo_height // 2) - 50
+        y = self.winfo_y() + (self.winfo_height() // 2) - 50
         toast.geometry(f"300x100+{x}+{y}")
 
         label = ctk.CTkLabel(toast, text=message, font=ctk.CTkFont(size=14))
