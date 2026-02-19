@@ -101,3 +101,8 @@ class HabitHandler:
             return False, "Permission Denied: Cannot overwrite the file."
         except Exception as e:
             return False, f"Disk Error: {str(e)}"
+
+    def get_file_name(self):
+        if self.current_file:
+            return os.path.basename(self.current_file)
+        return None
