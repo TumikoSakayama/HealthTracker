@@ -73,6 +73,15 @@ class HabitHandler:
         
         return False, "Habit not found."
 
+    def delete_habit(self, habit_name):
+        original_count = len(self.habits)
+        self.habits = [h for h in self.habits if h.name != habit_name]
+        
+        if len(self.habits) < original_count:
+            return self.save_to_file(f"Habit '{habit_name}' deleted successfully.")
+        else:
+            return False, "Habit not found."
+
     def save_to_file(self, success_msg="Changes saved!"):
         if not self.current_file:
             return False, "No file loaded, please load a file."

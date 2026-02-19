@@ -72,15 +72,15 @@ class HabitCard(ctk.CTkFrame):
     
     def create_widgets(self):
         self.name_label = ctk.CTkLabel(
-            self, text=self.habit_name,
+            self, text=self.habit.name,
             font=ctk.CTkFont(size=14, weight="bold"),
             wraplength=140, justify="left"
         )
-        self.name_label.grid(row=0, column=0, padx=15, pady=5, stick="w")
+        self.name_label.grid(row=0, column=0, padx=15, pady=5, sticky="w")
         
         stats_text = self.calculate_stats_display()
         self.stats_label = ctk.CTkLabel(
-            self, text=self.stats_text,
+            self, text=stats_text,
             font=ctk.CTkFont(size=12),
             text_color="gray70"
         )
@@ -93,11 +93,20 @@ class HabitCard(ctk.CTkFrame):
         self.check_btn = ctk.CTkCheckBox(
             self, text="Done Today",
             variable = self.check_var,
-            command = self.handle_toogle,
+            command = self.handle_toggle,
             fg_color="#2ecc71",
             hover_color="#27ae60"
         )
         self.check_btn.grid(row=2, column=0, rowspan=2, padx=20)
+        
+        self.delete_btn = ctk.CTkButton(
+            self, text="Delete",
+            command=lambda: self.delete_callback(self.habit.name),
+            fg_color="#e74c3c",
+            hover_color="#c0392b",
+            width=60
+        )
+        self.delete_btn.grid(row=2, column=1, padx=10, pady=10)
         
     def calculate_stats_display(self):
         count = len(self.habit.completion_date)
@@ -105,14 +114,15 @@ class HabitCard(ctk.CTkFrame):
         
         return f"Total: {count} | Weekly: {goal}"
         
-    def handle_toogle(self):
+    def handle_toggle(self):
         self.check_btn.configure(state="disabled")
         self.toggle_callback(self.habit.name)
         
 class HabitDisplay(ctk.CTkScrollableFrame):
-    def __init__(self, master, toggle_callback):
+    def __init__(self, master, toggle_callback, delete_callback):
         super().__init__(master)
         self.toggle_callback = toggle_callback
+        self.delete_callback = delete_callback
         self.grid_columnconfigure(0, weight=1)
         
     def update_view(self, habits):
@@ -120,6 +130,6 @@ class HabitDisplay(ctk.CTkScrollableFrame):
             widget.destroy()
             
         for i, habit in enumerate(habits):
-            card = HabitCard(self, habit, self.toggle_callback)
-            card.grid(row=1, column=0, sticky="ew", padx=10, pady=5)
+            card = HabitCard(self, habit, self.toggle_callback, self.delete_callback)
+            card.grid(row=i, column=0, sticky="ew", padx=10, pady=5)
 

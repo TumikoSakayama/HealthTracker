@@ -69,7 +69,7 @@ class FitnessTrackerApp(ctk.CTk):
         self.form = HabitForm(self.main_frame, self.add_habit)
         self.form.grid(row=0, column=0, sticky="ew", padx=20, pady=10)
 
-        self.display = HabitDisplay(self.main_frame, self.toggle_completion)
+        self.display = HabitDisplay(self.main_frame, self.toggle_completion, self.delete_habit)
         self.display.grid(row=1, column=0, sticky="nsew", padx=20, pady=10)
 
         self.status_label = ctk.CTkLabel(self.main_frame, text="Please load a file to begin.")
@@ -96,6 +96,14 @@ class FitnessTrackerApp(ctk.CTk):
            self.refresh_habit_view()
         else:
             messagebox.showerror("Save Failed", message)
+    
+    def delete_habit(self, habit_name):
+        success, message = self.handler.delete_habit(habit_name)
+        if success:
+            self.refresh_habit_view()
+            self.show_message(f"Habit '{habit_name}' deleted successfully")
+        else:
+            messagebox.showerror("Delete Failed", message)
     
     def refresh_habit_view(self):
         self.display.update_view(self.handler.habits)
