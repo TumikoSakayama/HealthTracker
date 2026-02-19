@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.dates as mdates
 import customtkinter as ctk
 from datetime import datetime
 
@@ -133,3 +136,35 @@ class HabitDisplay(ctk.CTkScrollableFrame):
             card = HabitCard(self, habit, self.toggle_callback, self.delete_callback)
             card.grid(row=i, column=0, sticky="ew", padx=10, pady=5)
 
+class HabitStats(ctk.CTkFrame):
+    def __init__(self, master, handler):
+        super().__init__(master)
+        self.handler = handler
+        self.fig, self.ax = plt.subplots(figsize=(5, 2.5), facecolor="#2b2b2b")
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self)
+        self.canvas.get_tk_widget().pack(fill="both", expand=True)
+        
+    def update_graph(self):
+        self.ax.clear()
+        self.ax.set_facecolor("#2b2b2b")
+        
+        if not self.handler.habits:
+            self.ax.text(0.5, 0.5, "No habits to display", color="white", ha="center", va="center")
+        else:
+            dates, rates = self.handler.last_30_days_stats()
+            x_values = [datetime.strftime("%Y-%m-%d") for d in dates]
+            
+            
+            self.ax.plot(x_values, rates, marker='o', color="#2ecc71", linewidth=2)   
+            self.ax.set_ylim(-5, 105)
+            
+            self.ax.tick_params(axis="both", color="white", labelsize="8")
+            for spine in self.ax.spines.values():
+                spine.set_color("white")
+                
+            self.ax.xaxis.set_major_locator(mdates.DateFormatter("%m/%d"))
+            self.ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))
+            
+        self.canvas.draw()
+            
+            

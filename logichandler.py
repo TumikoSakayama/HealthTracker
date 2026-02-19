@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from habits import Habit
 
 class HabitHandler:
@@ -106,3 +106,28 @@ class HabitHandler:
         if self.current_file:
             return os.path.basename(self.current_file)
         return None
+    
+    def last_30_days_stats(self, habit):
+        today = datetime.now().date()
+        
+        date_objs =  [today - timedelta(days=i) for i in range(29, -1, -1)]
+        date_strings = [d.strftime("%Y-%m-%d") for d in date_objs]
+        
+        success_rates = []
+        
+        for date_str in date_strings:
+            if not self.habits:
+                success_rates.append(0)
+                continue
+            
+            completed_today = 0
+            for habit in self.habits:
+                if date_str in habit.completion_date:
+                    completed_today += 1    
+            
+            daily_rate = (completed_today / len(self.habits)) * 100
+            success_rates.append(daily_rate)
+            
+        return date_strings, success_rates
+        
+        
