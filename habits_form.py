@@ -151,8 +151,8 @@ class HabitStats(ctk.CTkFrame):
         if not self.handler.habits:
             self.ax.text(0.5, 0.5, "No habits to display", color="white", ha="center", va="center")
         else:
-            dates, rates = self.handler.last_30_days_stats()
-            x_values = [datetime.strftime("%Y-%m-%d") for d in dates]
+            dates, rates = self.handler.last_30_days_stats(None)
+            x_values = [datetime.strptime(d, "%Y-%m-%d") for d in dates]
             
             
             self.ax.plot(x_values, rates, marker='o', color="#2ecc71", linewidth=2)   
@@ -162,7 +162,7 @@ class HabitStats(ctk.CTkFrame):
             for spine in self.ax.spines.values():
                 spine.set_color("white")
                 
-            self.ax.xaxis.set_major_locator(mdates.DateFormatter("%m/%d"))
+            self.ax.xaxis.set_major_formatter(mdates.DateFormatter("%m/%d"))
             self.ax.xaxis.set_major_locator(mdates.DayLocator(interval=7))
             
         self.canvas.draw()
