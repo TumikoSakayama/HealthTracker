@@ -18,11 +18,11 @@ class Habit:
         }
 
     @staticmethod
-    def from_dict(self):
+    def from_dict(data):
         return Habit(
-            data['name'],
-            data['category'],
-            data['weekly_goal', 7],
-            data['created_at'],
-            data['completion_date']
+            name = data['name'],
+            category = data['category'],
+            weekly_goal = data.get('weekly_goal', 7),
+            created_at = data['created_at'],
+            completion_date = data.get('completion_date', [])
         )

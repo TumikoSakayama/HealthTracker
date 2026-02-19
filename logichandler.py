@@ -40,7 +40,7 @@ class HabitHandler:
             return False, str(e), None
 
     def add_habit(self, name, category, goal):
-        if not name or category:
+        if not name.strip() or not category.strip():
             return False, "Name nor category cannot be empty."
         
         if any(h.name.lower() == name.strip().lower() for h in self.habits):

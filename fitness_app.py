@@ -18,16 +18,53 @@ class FitnessTrackerApp(ctk.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+    def handle_new_file(self):
+        path = filedialog.asksaveasfilename(defaultextension=".json")
+
+        if path:
+            success, message = self.handler.new_collection(path)
+            if success:
+                self.refresh_habit_view()
+            else:
+                messagebox.showerror("Error", message)
+
+    def handle_load_file(self):
+        file_path = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
+
+        if file_path:
+            success, count, name = self.handler.load_habits(file_path)
+            if success:
+                self.refresh_habit_view()
+                self.show_message(f"Successfully loaded {count} habits from {name}")
+            else:
+                messagebox.showerror("Load Error", count)
+
     def create_components(self):
         sidebar_callbacks = {
-            'new_file': self.handler.new_file,
-            'load_file': self.handler.load_file,
-            'save_file': self.handler.save_file,
-            'refresh': self.handler.refresh
+            'new_file': self.handle_new_file,
+            'load_file': self.handle_load_file,
+            'save_file': self.handler.save_to_file,
+            'refresh': self.refresh_habit_view
         }
 
         self.sidebar = ctk.CTkFrame(self, width=200, corner_radius=0)
         self.sidebar.grid(row=0, column=0, sticky='nsew')
+
+        buttons = [
+            ("New File", sidebar_callbacks["new_file"]),
+            ("Load File", sidebar_callbacks["load_file"]),
+            ("Save File", sidebar_callbacks["save_file"]),
+            ("Refresh View", sidebar_callbacks["refresh"])
+        ]
+
+        for i, (text, cmd) in enumerate(buttons):
+            btn = ctk.CTkButton(self.sidebar, text=text, command=cmd)
+            btn.grid(row=i, column=0, padx=20, pady=10)
+
+        self.main_frame = ctk.CTkFrame(self, corner_radius=0)
+        self.main_frame.grid(row=0, column=1, sticky='nsew', padx=10, pady=10)
+        self.main_frame.grid_columnconfigure(0, weight=1)
+        self.main_frame.grid_rowconfigure(1, weight=1)
 
         self.form = HabitForm(self.main_frame, self.add_habit)
         self.form.grid(row=0, column=0, sticky="ew", padx=20, pady=10)
@@ -35,13 +72,8 @@ class FitnessTrackerApp(ctk.CTk):
         self.display = HabitDisplay(self.main_frame, self.toggle_completion)
         self.display.grid(row=1, column=0, sticky="nsew", padx=20, pady=10)
 
-        self.main_frame = ctk.CTkFrame(self, corner_radius=0)
-        self.main_frame.grid(row=0, column=1, sticky='nsew', padx=10, pady=10)
-        self.main_frame.grid_columnconfigure(0, weight=1)
-        self.main_frame.grid_rowconfigure(1, weight=1)
-
         self.status_label = ctk.CTkLabel(self.main_frame, text="Please load a file to begin.")
-        self.status_label.grid(row=0, column=0, pady=20)
+        self.status_label.grid(row=2, column=0, pady=20)
 
     def handle_save(self):
         success, message = self.handler.save_to_file()
@@ -66,7 +98,9 @@ class FitnessTrackerApp(ctk.CTk):
             messagebox.showerror("Save Failed", message)
     
     def refresh_habit_view(self):
-        messagebox.showinfo("Loading", "Refreshing view with current habits...")
+        self.display.update_view(self.handler.habits)
+        self.status_label.configure(text = f"File: {self.handler.current_file}")
+        self.form.set_enabled(True)
 
     def show_message(self, message, timeout=3000):
         toast = ctk.CTkToplevel(self)
