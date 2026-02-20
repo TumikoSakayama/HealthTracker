@@ -154,7 +154,6 @@ class HabitStats(ctk.CTkFrame):
             dates, rates = self.handler.last_30_days_stats(None)
             x_values = [datetime.strptime(d, "%Y-%m-%d") for d in dates]
             
-            
             self.ax.plot(x_values, rates, marker='o', color="#2ecc71", linewidth=2)   
             self.ax.set_ylim(-5, 105)
             

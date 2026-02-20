@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 from logichandler import HabitHandler
-from habits_form import HabitForm, HabitDisplay
+from habits_form import HabitForm, HabitDisplay, HabitStats
 
 class FitnessTrackerApp(ctk.CTk):
     def __init__(self):
@@ -65,6 +65,7 @@ class FitnessTrackerApp(ctk.CTk):
         self.main_frame.grid(row=0, column=1, sticky='nsew', padx=10, pady=10)
         self.main_frame.grid_columnconfigure(0, weight=1)
         self.main_frame.grid_rowconfigure(1, weight=1)
+        self.main_frame.grid_rowconfigure(2, weight=1)
 
         self.form = HabitForm(self.main_frame, self.add_habit)
         self.form.grid(row=0, column=0, sticky="ew", padx=20, pady=10)
@@ -72,8 +73,11 @@ class FitnessTrackerApp(ctk.CTk):
         self.display = HabitDisplay(self.main_frame, self.toggle_completion, self.delete_habit)
         self.display.grid(row=1, column=0, sticky="nsew", padx=20, pady=10)
 
+        self.stats_widget = HabitStats(self.main_frame, self.handler)
+        self.stats_widget.grid(row=2, column=0, sticky="nsew", padx=20, pady=10)
+
         self.status_label = ctk.CTkLabel(self.main_frame, text="Please load a file to begin.")
-        self.status_label.grid(row=2, column=0, pady=20)
+        self.status_label.grid(row=3, column=0, pady=10)
 
     def handle_save(self):
         success, message = self.handler.save_to_file()
@@ -107,8 +111,14 @@ class FitnessTrackerApp(ctk.CTk):
     
     def refresh_habit_view(self):
         self.display.update_view(self.handler.habits)
-        self.status_label.configure(text = f"File: {self.handler.current_file}")
-        self.form.set_enabled(True)
+        self.stats_widget.update_graph()
+
+        file_name = self.handler.get_file_name() or "None"
+        self.status_label.configure(text = f"File: {file_name}")
+
+        if self.handler.current_file:
+            self.form.set_enabled(True)
+
 
     def show_message(self, message, timeout=3000):
         toast = ctk.CTkToplevel(self)

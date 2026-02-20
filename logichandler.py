@@ -125,8 +125,12 @@ class HabitHandler:
                 if date_str in habit.completion_date:
                     completed_today += 1    
             
-            daily_rate = (completed_today / len(self.habits)) * 100
-            success_rates.append(daily_rate)
+            total_habits = len(self.habits)
+            if total_habits == 0:
+                success_rates.append(0)
+            else:                
+                daily_rate = (completed_today / total_habits) * 100 if total_habits > 0 else 0
+                success_rates.append(daily_rate)
             
         return date_strings, success_rates
         
